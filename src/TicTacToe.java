@@ -1,8 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.JPanel;
-import javax.swing.ImageIcon;
+import javax.swing.border.EmptyBorder;
 
 public class TicTacToe implements ActionListener {
 
@@ -22,27 +21,37 @@ public class TicTacToe implements ActionListener {
 
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 800);
+        frame.setSize(400, 400);
+        frame.setTitle("Tic Tac Toe");
         frame.setLayout(new BorderLayout());
+
+        // Title Panel
         textfield.setBackground(new Color(175, 180, 250));
         textfield.setForeground(new Color(0, 0, 0));
         textfield.setHorizontalAlignment(JLabel.CENTER);
-        textfield.setFont(new Font("Arial", Font.BOLD, 40));
-        textfield.setText("TIC TAC TOE   ||  X TURN");
+        textfield.setFont(new Font("Arial", Font.BOLD, 24));
+        textfield.setText("TIC TAC TOE - X TURN");
         textfield.setOpaque(true);
         titlePanel.setLayout(new BorderLayout());
-        titlePanel.setPreferredSize(new Dimension(800, 100));
+        titlePanel.setPreferredSize(new Dimension(400, 50));
+        titlePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         titlePanel.add(textfield, BorderLayout.CENTER);
+
+        // Button Panel
         buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(3, 3));
-        buttonPanel.setPreferredSize(new Dimension(800, 700));
+        buttonPanel.setPreferredSize(new Dimension(400, 300));
+        buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
         buttons = new JButton[9];
         for (int i = 0; i < 9; i++) {
             buttons[i] = new JButton();
             buttons[i].setFocusable(false);
             buttons[i].addActionListener(this);
+            buttons[i].setFont(new Font("Arial", Font.BOLD, 40));
             buttonPanel.add(buttons[i]);
         }
+
         frame.add(titlePanel, BorderLayout.NORTH);
         frame.add(buttonPanel, BorderLayout.CENTER);
 
@@ -53,28 +62,23 @@ public class TicTacToe implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         JButton buttonClicked = (JButton) e.getSource();
-        if(!buttonClicked.getText().isEmpty()){
+        if (!buttonClicked.getText().isEmpty()) {
             return;
         }
         if (player_turn) {
             textfield.setText("O TURN");
-            Font newFont = new Font(Font.SERIF, Font.PLAIN,  64);
-            buttonClicked.setFont(newFont);
             buttonClicked.setText("X");
             buttonClicked.setBackground(Color.GREEN);
             player_turn = false;
             check();
         } else {
             textfield.setText("X TURN");
-            Font newFont = new Font(Font.SERIF, Font.PLAIN,  64);
-            buttonClicked.setFont(newFont);
             buttonClicked.setText("O");
             buttonClicked.setBackground(Color.GREEN);
             player_turn = true;
             check();
         }
     }
-
 
     public void check() {
         String[] board = new String[9];
@@ -100,6 +104,7 @@ public class TicTacToe implements ActionListener {
         } else if (board[2].equals(board[4]) && board[4].equals(board[6]) && !board[2].equals("")) {
             winner = board[2];
         }
+
         boolean isDraw = true;
         for (int i = 0; i < 9; i++) {
             if (board[i].equals("")) {
@@ -107,51 +112,30 @@ public class TicTacToe implements ActionListener {
                 break;
             }
         }
+
         if (winner != null) {
-            if (winner.equals("X")) {
-                clearScreen();
-                JLabel label = new JLabel();
-                buttonPanel.add(label);
-                buttonPanel.setLayout(null);
-                textfield.setText("X WIN CONGRATS!");
-                ImageIcon iconLogo = new ImageIcon("images/image.jpg");
-                label.setIcon(new ImageIcon(iconLogo.getImage().getScaledInstance(300,300, Image.SCALE_DEFAULT)));
-                label.setHorizontalAlignment(SwingConstants.CENTER);
-                label.setVerticalAlignment(SwingConstants.TOP);
-                label.setBounds(250, 250, 300, 300);
-
-
-            } else {
-                clearScreen();
-                JLabel label = new JLabel();
-                buttonPanel.add(label);
-                buttonPanel.setLayout(null);
-                textfield.setText("O WIN CONGRATS!");
-                ImageIcon iconLogo = new ImageIcon("images/image1.jpg");
-                label.setIcon(new ImageIcon(iconLogo.getImage().getScaledInstance(300,300, Image.SCALE_DEFAULT)));
-                label.setHorizontalAlignment(SwingConstants.CENTER);
-                label.setVerticalAlignment(SwingConstants.TOP);
-                label.setBounds(250, 250, 300, 300);
-
-            }
+            clearScreen();
+            textfield.setText(winner + " WINS!");
+            JOptionPane.showMessageDialog(frame, winner + " wins the game!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+            resetGame();
         } else if (isDraw) {
             clearScreen();
-            JLabel label = new JLabel();
-            clearScreen();
-            buttonPanel.add(label);
-            buttonPanel.setLayout(null);
             textfield.setText("DRAW!");
-            ImageIcon iconLogo = new ImageIcon("images/image2.jpg");
-            label.setIcon(new ImageIcon(iconLogo.getImage().getScaledInstance(300,300, Image.SCALE_DEFAULT)));
-            label.setHorizontalAlignment(SwingConstants.CENTER);
-            label.setVerticalAlignment(SwingConstants.TOP);
-            label.setBounds(250, 250, 300, 300);
+            JOptionPane.showMessageDialog(frame, "It's a draw!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+            resetGame();
         }
     }
+
     public void clearScreen() {
-        buttonPanel.removeAll();
-        frame.revalidate();
-        frame.repaint();
+        for (int i = 0; i < 9; i++) {
+            buttons[i].setText("");
+            buttons[i].setBackground(null);
+        }
+    }
+
+    public void resetGame() {
+        clearScreen();
+        player_turn = true;
+        textfield.setText("TIC TAC TOE - X TURN");
     }
 }
-
